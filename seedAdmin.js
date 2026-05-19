@@ -3,12 +3,20 @@ import bcrypt from 'bcryptjs';
 import User from './model/user_model.js';
 import dotenv from 'dotenv';
 import dns from 'dns';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const envPath = resolve(__dirname, '.env');
+const dotenvResult = dotenv.config({ path: envPath, quiet: true });
+if (dotenvResult.error && dotenvResult.error.code !== 'ENOENT') {
+  console.warn(`dotenv warning: unable to load env file at ${envPath}.`, dotenvResult.error);
+}
+
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-// Use URI from .env only
-const uri = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL;
 
 if (!uri) {
   console.error(" Error: MONGO_URI not found in .env file!");

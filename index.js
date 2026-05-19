@@ -29,10 +29,9 @@ import { dirname, resolve } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const envPath = resolve(__dirname, ".env");
-const dotenvResult = dotenv.config({ path: envPath });
-if (dotenvResult.error) {
+const dotenvResult = dotenv.config({ path: envPath, quiet: true });
+if (dotenvResult.error && dotenvResult.error.code !== 'ENOENT') {
   console.warn(`dotenv warning: unable to load env file at ${envPath}.`, dotenvResult.error);
-  dotenv.config();
 }
 
 dns.setServers(['8.8.8.8', '8.8.4.4']);
