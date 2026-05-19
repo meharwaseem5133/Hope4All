@@ -25,11 +25,18 @@ import Notification from "./model/notification_model.js";
 import { errorMiddleware } from "./middleware/errorMiddleware.js";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const envPath = resolve(__dirname, ".env");
 const dotenvResult = dotenv.config({ path: envPath, quiet: true });
+const envExists = fs.existsSync(envPath);
+if (envExists) {
+  console.log(` dotenv loaded from ${envPath}`);
+} else {
+  console.log(` dotenv .env file not found at ${envPath}; falling back to environment variables.`);
+}
 if (dotenvResult.error && dotenvResult.error.code !== 'ENOENT') {
   console.warn(`dotenv warning: unable to load env file at ${envPath}.`, dotenvResult.error);
 }

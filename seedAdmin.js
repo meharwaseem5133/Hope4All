@@ -16,7 +16,20 @@ if (dotenvResult.error && dotenvResult.error.code !== 'ENOENT') {
 
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-const uri = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL;
+const mongoEnvNames = [
+  'MONGO_URI',
+  'MONGODB_URI',
+  'DATABASE_URL',
+  'MONGO_URL',
+  'MONGO_DB_URI',
+  'RAILWAY_MONGO_URI',
+  'RAILWAY_DATABASE_URL'
+];
+const uri = mongoEnvNames.map(name => process.env[name]).find(Boolean);
+const detectedSeedEnvName = mongoEnvNames.find(name => process.env[name]);
+if (detectedSeedEnvName) {
+  console.log(` Using MongoDB URI from env var: ${detectedSeedEnvName}`);
+}
 
 if (!uri) {
   console.error(" Error: MONGO_URI not found in .env file!");

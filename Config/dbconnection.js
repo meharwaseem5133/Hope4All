@@ -5,12 +5,25 @@ const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000;
 
 const dbConnection = async () => {
-  const mongoURI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL;
+  const mongoEnvNames = [
+    'MONGO_URI',
+    'MONGODB_URI',
+    'DATABASE_URL',
+    'MONGO_URL',
+    'MONGO_DB_URI',
+    'RAILWAY_MONGO_URI',
+    'RAILWAY_DATABASE_URL'
+  ];
+
+  const mongoURI = mongoEnvNames.map(name => process.env[name]).find(Boolean);
+  const detectedEnvName = mongoEnvNames.find(name => process.env[name]);
 
   if (!mongoURI) {
-    console.error(" MONGO_URI, MONGODB_URI, or DATABASE_URL is not defined. Set the database URI in Railway environment variables.");
+    console.error(" MONGO_URI, MONGODB_URI, DATABASE_URL, or another Mongo/Railway DB env var is not defined. Set the database URI in Railway environment variables.");
     process.exit(1);
   }
+
+  console.log(` Using MongoDB URI from env var: ${detectedEnvName}`);
 
   // Log masked URI for debugging
   const maskedURI = mongoURI.replace(/^(mongodb[^\/]+:\/\/)([^:]+:)[^@]+@/, `$1***:***@`);
