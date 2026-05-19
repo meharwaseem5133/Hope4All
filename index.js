@@ -23,8 +23,18 @@ import cron from "node-cron";
 import Fee from "./model/fee_model.js";
 import Notification from "./model/notification_model.js";
 import { errorMiddleware } from "./middleware/errorMiddleware.js";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const envPath = resolve(__dirname, ".env");
+const dotenvResult = dotenv.config({ path: envPath });
+if (dotenvResult.error) {
+  console.warn(`dotenv warning: unable to load env file at ${envPath}.`, dotenvResult.error);
+  dotenv.config();
+}
+
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 dbconnection();
 
